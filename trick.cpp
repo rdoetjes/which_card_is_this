@@ -266,7 +266,7 @@ std::string Trick::RevealCardAtPosition(std::string text, Trick::States *state, 
     ss >> num;  
 
     if (num < 1 and num > 52) return "You need to listen, I asked for a number between 1 and 52!";
-std::cout << card->Value << " " << card->Suit << "\n";
+
     //find what the current offset is in the stack
     std::string cardCode = FromCardToCardCode(card);
 

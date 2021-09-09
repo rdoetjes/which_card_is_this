@@ -34,6 +34,7 @@ int main(){
                 
         std::string say = Trick::divination(result->Text, &currentState, &card);
         speak->SpeakTextAsync(say).get();
+        std::cout << say << std::endl;
         result = recognizer->RecognizeOnceAsync().get();
     }
     return 0;

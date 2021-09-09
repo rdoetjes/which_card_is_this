@@ -71,6 +71,13 @@ std::string Trick::GetValueRange(std::string text, Trick::States *state, Card *c
     std::regex five_to_eight("[yes|sure]?[,]?it is*", std::regex_constants::ECMAScript | std::regex_constants::icase);
     std::regex nine_to_queen("correct*", std::regex_constants::ECMAScript | std::regex_constants::icase);
     std::regex king("[that is|you are] correct*", std::regex_constants::ECMAScript | std::regex_constants::icase);
+    std::regex wrong("no*", std::regex_constants::ECMAScript | std::regex_constants::icase);
+
+    if (std::regex_search(text, wrong)) {
+        card->FourCardBlockNr = 1;
+        *state=Trick::States::GET_COLOR_AND_SUIT;
+        return "Sorry let's try again";
+    }
 
     Trick::States nextState = Trick::States::GET_VALUE;
     
@@ -197,7 +204,7 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
 
     std::string SiStebbingsStack[52] {
         "AC", "4H", "7S", "10D", "KC", "3H", "6S", "9D", "QC", "2H",
-        "5C", "8D", "JC", "AH", "4S", "7D", "10C", "KH", "3C", "6D",
+        "5S", "8D", "JC", "AH", "4S", "7D", "10C", "KH", "3S", "6D",
         "9C", "QH", "2S", "5D", "8C", "JH", "AS", "4D", "7C", "10H",
         "KS", "3D", "6C", "9H", "QS", "2D", "5C", "8H", "JS", "AD",
         "4C", "7H", "10S", "KD", "3C", "6H", "9S", "QD", "2C", "5H",

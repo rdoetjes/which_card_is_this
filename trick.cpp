@@ -68,7 +68,7 @@ std::string Trick::GetValueRange(std::string text, Trick::States *state, Card *c
 
     Trick::States nextState = Trick::States::GET_VALUE;
     
-    std::string reply = "The card you are holding is a "+card->Suit+"!?";
+    std::string reply = "Is the card that you are holding a "+card->Suit+"?";
 
     //Order is important to avoid partial matches of the text ("yes it is" needs to be evaluated before "yes")
     if (std::regex_search(text,five_to_eight)) {

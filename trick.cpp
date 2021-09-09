@@ -185,11 +185,11 @@ std::string Trick::toCardValueCode(std::string cardValue){
 }
 
 /*
-    Takes the name of the suite of a card and returns the card code suit letter
+    Takes the name of the suit of a card and returns the card code suit letter
     for example: 
         Clubs returns "C"
         Diamonds returns "D"
-    The alogithnm just takes the first letter of the suite and captitalizes it
+    The algorithm, just takes the first letter of the suit and captitalizes it
 */
 std::string Trick::toCardSuiteCode(std::string cardSuite){
     std::string result = "";
@@ -210,7 +210,7 @@ std::string Trick::FromCardToCardCode(Card *card){
 }
 
 /*
-    Convert the suite code from a card code to a complete suit name
+    Convert the suit code from a card code to a complete suit name
     For example: C returns Clubs
                  D returns Diamonds
                  S returns Spades
@@ -226,7 +226,7 @@ std::string Trick::FromCardCodeSuitToCompleteSuit(std::string cardCodeSuiteLette
 }
 /*
     Converts a card code, for example 10C to it's spoken format. 
-    In case of 10C that would be 10 of Clubs"
+    In case of 10C that would be: "10 of Clubs"
 */
 std::string Trick::FromCardCodetoCard(std::string cardCode){
         std::map<std::string, std::string> toCardCode = { 
@@ -241,7 +241,8 @@ std::string Trick::FromCardCodetoCard(std::string cardCode){
 
 /*
     The text spoken by the person will be a number between 1 and 52
-    The computer would then devine, which card is that number of positions down in the stack
+    The computer will then devine, which card is located at that number in the deck of cards.
+    Which can be done because it's a Si Stebbins Stack
 */
 std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card *card){
     std::stringstream ss;  
@@ -275,6 +276,7 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
 
     int index = cardLocationInStack + num -1;
 
+    //restart the state machine, after this marvelous feat of mentalism
     *state = Trick::States::GET_COLOR_AND_SUIT;
     
     std::string ins = "Count down "+std::to_string(num)+" cards and you find the ";

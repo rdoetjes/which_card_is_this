@@ -248,8 +248,6 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
     unsigned int num;
     unsigned int cardLocationInStack;
 
-    std::cout << card->Suit << " " << card->Value << "\n";
-
     if (text == "") return "I asked for a number between 1 and 52!";
 
     ss << text;  
@@ -300,9 +298,7 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
                             -correct 3rd item
                             -that is correct 4 item
 */
-std::string Trick::divination(std::string text, Trick::States *state, Card *card){
-    std::cout << "state: " << *state << " text: " << text << std::endl;
-    
+std::string Trick::divination(std::string text, Trick::States *state, Card *card){    
     if (*state==Trick::States::GET_COLOR_AND_SUIT) return Trick::GetColor(text, state, card);
     
     if (*state==Trick::States::GET_VALUE_RANGE) return Trick::GetValueRange(text, state, card);

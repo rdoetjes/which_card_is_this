@@ -236,9 +236,7 @@ std::string Trick::FromCardCodetoCard(std::string cardCode){
         {"K", "King"}                
     } ;
 
-    std::string result = "";
-
-    return  (cardCode.length() > 2) ? toCardCode[cardCode.substr(0, 2)] + " of " + FromCardCodeSuitToCompleteSuit( cardCode.substr(2,1) ) : toCardCode[cardCode.substr(0, 1)] + " of " +FromCardCodeSuitToCompleteSuit(cardCode.substr(1,1) );   
+    return (cardCode.length() > 2) ? toCardCode[cardCode.substr(0, 2)] + " of " + FromCardCodeSuitToCompleteSuit( cardCode.substr(2,1) ) : toCardCode[cardCode.substr(0, 1)] + " of " + FromCardCodeSuitToCompleteSuit(cardCode.substr(1,1) );   
 }
 
 /*
@@ -281,7 +279,8 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
 
     *state = Trick::States::GET_COLOR_AND_SUIT;
     
-    return std::string( (index > 51) ? FromCardCodetoCard(SiStebbingsStack[index-51-1]) : FromCardCodetoCard(SiStebbingsStack[index] ));
+    std::string ins = "Count down "+std::to_string(num)+" cards and you find the ";
+    return std::string( (index > 51) ? ins+FromCardCodetoCard(SiStebbingsStack[index-51-1]) : ins+FromCardCodetoCard(SiStebbingsStack[index] ));
 }
 
 /*This step will verbally encode the color and the suit

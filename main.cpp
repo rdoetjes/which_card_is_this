@@ -2,6 +2,7 @@
 #include <speechapi_cxx.h>
 #include <fstream>
 #include "trick.h"
+#include "cyclicstacks.h"
 
 using namespace std;
 using namespace Microsoft::CognitiveServices::Speech;
@@ -17,12 +18,13 @@ int main(){
     
     //open the speech synthezier
     auto speak = SpeechSynthesizer::FromConfig(config);
+
     //open a speech recognozer for text to speech
     auto recognizer = SpeechRecognizer::FromConfig(config);
 
     auto result = recognizer->RecognizeOnceAsync().get();
     while(1){
-        std::string say = Trick::divination(result->Text, &currentState, &card);
+        std::string say = Trick::divination(result->Text, &currentState, &card, SiStebbingsStack);
         std::cout << say << std::endl;
         speak->SpeakTextAsync(say).get();        
         result = recognizer->RecognizeOnceAsync().get();

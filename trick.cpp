@@ -62,11 +62,11 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
     GET_COLOR_AND_SUIT State
 */
 void Trick::resetCard(Card *card){
-    card->Color="";
-    card->Suit="";
-    card->Value="";
+    card->Color="Black";
+    card->Suit="Spade";
+    card->Value="Nine";
+    card->FourCardBlockNr=2;
 }
-
 
 /*
     The computer will say: 
@@ -141,7 +141,7 @@ std::string Trick::GetValue(std::string text, Trick::States *state, Card *card){
     std::regex nine_to_queen("correct*", std::regex_constants::ECMAScript | std::regex_constants::icase); //third item in the second array
     std::regex king("[that is|you are] correct*", std::regex_constants::ECMAScript | std::regex_constants::icase); //fourth eitem in the second array
 
-    Trick::States nextState = (iterations % 2 == 0) ? Trick::States::SI_STEBBINS_QUESTION : Trick::States::GET_COLOR_AND_SUIT;
+    Trick::States nextState = (iterations % 2 == 0) ? Trick::States::CYCLIC_STACK_QUESTION : Trick::States::GET_COLOR_AND_SUIT;
     
     //Order is important to avoid partial matches of the text ("yes it is" needs to be evaluated before "yes")
     if (std::regex_search(text,five_to_eight)){
@@ -176,7 +176,7 @@ std::string Trick::GetValue(std::string text, Trick::States *state, Card *card){
     Now the computer will ask for a random number between 1 and 52
 */
 std::string Trick::Ask4RandomNumber(Trick::States *state){
-    *state = Trick::SI_STEBBINS_REVEAL;
+    *state = Trick::CYCLIC_STACK_REVEAL;
     return "Please put the card back on top. And then give me a number between 1 and 52.";
 }
 
@@ -255,7 +255,7 @@ std::string Trick::FromCardCodetoCard(std::string cardCode){
     The computer will then devine, which card is located at that number in the deck of cards.
     Which can be done because it's a Si Stebbins Stack
 */
-std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card *card){
+std::string Trick::RevealCardAtPosition(std::string text, Trick::States *state, Card *card, const std::string cyclicCardStack[52]){
     std::stringstream ss;  
     unsigned int num;
     unsigned int cardLocationInStack;
@@ -266,20 +266,13 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
     ss >> num;  
 
     if (num < 1 and num > 52) return "You need to listen, I asked for a number between 1 and 52!";
-
-    std::string SiStebbingsStack[52] {
-        "AC", "4H", "7S", "10D", "KC", "3H", "6S", "9D", "QC", "2H",
-        "5S", "8D", "JC", "AH", "4S", "7D", "10C", "KH", "3S", "6D",
-        "9C", "QH", "2S", "5D", "8C", "JH", "AS", "4D", "7C", "10H",
-        "KS", "3D", "6C", "9H", "QS", "2D", "5C", "8H", "JS", "AD",
-        "4C", "7H", "10S", "KD", "3C", "6H", "9S", "QD", "2C", "5H",
-        "8S", "JD"
-    };
-
+std::cout << card->Value << " " << card->Suit << "\n";
     //find what the current offset is in the stack
     std::string cardCode = FromCardToCardCode(card);
+
+    cardLocationInStack = 0;
     for (int i=0; i<52; i++){
-        if (SiStebbingsStack[i] == cardCode){
+        if (cyclicCardStack[i] == cardCode){
             cardLocationInStack = i;
             break;
         }
@@ -291,7 +284,7 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
     *state = Trick::States::GET_COLOR_AND_SUIT;
     
     std::string ins = "Count down "+std::to_string(num)+" cards and you find the ";
-    return std::string( (index > 51) ? ins+FromCardCodetoCard(SiStebbingsStack[index-51-1]) : ins+FromCardCodetoCard(SiStebbingsStack[index] ));
+    return std::string( (index > 51) ? ins+FromCardCodetoCard(cyclicCardStack[index-51-1]) : ins+FromCardCodetoCard(cyclicCardStack[index] ));
 }
 
 /*This step will verbally encode the color and the suit
@@ -311,7 +304,7 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
                             -correct 3rd item
                             -that is correct 4 item
 */
-std::string Trick::divination(std::string text, Trick::States *state, Card *card){    
+std::string Trick::divination(std::string text, Trick::States *state, Card *card, const std::string cyclicCardStack[52]){    
     if (*state==Trick::States::GET_COLOR_AND_SUIT) {
         Trick::resetCard(card);
         return Trick::GetColor(text, state, card);
@@ -321,9 +314,9 @@ std::string Trick::divination(std::string text, Trick::States *state, Card *card
 
     if (*state==Trick::States::GET_VALUE) return Trick::GetValue(text, state, card);
 
-    if (*state==Trick::States::SI_STEBBINS_QUESTION) return Trick::Ask4RandomNumber(state);
+    if (*state==Trick::States::CYCLIC_STACK_QUESTION) return Trick::Ask4RandomNumber(state);
 
-    if (*state==Trick::States::SI_STEBBINS_REVEAL) return Trick::SiStebbinsReveal(text, state, card);
+    if (*state==Trick::States::CYCLIC_STACK_REVEAL) return Trick::RevealCardAtPosition(text, state, card, cyclicCardStack);
 
     return "";
 }

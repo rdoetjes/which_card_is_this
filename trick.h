@@ -17,5 +17,7 @@ class Trick{
         static std::string FromCardToCardCode(Card *card);
         static std::string toCardValueCode(std::string cardValue);
         static std::string toCardSuiteCode(std::string cardSuite);
+        static std::string FromCardCodetoCard(std::string cardCode);
+        static std::string FromCardCodeSuitToCompleteSuit(std::string cardCodeSuiteLetter);
 };
 #endif

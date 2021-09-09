@@ -111,6 +111,9 @@ std::string Trick::GetValueRange(std::string text, Trick::States *state, Card *c
     return "I have no fuckin idea! Do I look like a mindreader to you?";
 }
 
+/*
+    We tell the computer which value to pick from the range, that we signaled before.
+*/
 std::string Trick::GetValue(std::string text, Trick::States *state, Card *card){
     static int iterations = 0;
     iterations++;
@@ -166,6 +169,10 @@ std::string Trick::Ask4RandomNumber(Trick::States *state){
     return "Please put the card back on top. And then give me a number between 1 and 52.";
 }
 
+/*
+    Returns the card value code based on the card value
+    for example Ace returns A (AC is for example ace of club in card code format)
+*/
 std::string Trick::toCardValueCode(std::string cardValue){
     std::map<std::string, std::string> toCardCode = { 
         {"Ace", "A"}, {"Two", "2"}, {"Three", "3"}, {"Four", "4"}, 
@@ -177,17 +184,67 @@ std::string Trick::toCardValueCode(std::string cardValue){
     return toCardCode[cardValue];
 }
 
+/*
+    Takes the name of the suite of a card and returns the card code suit letter
+    for example: 
+        Clubs returns "C"
+        Diamonds returns "D"
+    The alogithnm just takes the first letter of the suite and captitalizes it
+*/
 std::string Trick::toCardSuiteCode(std::string cardSuite){
     std::string result = "";
     result = toupper(cardSuite[0]);
     return result;
 }
 
+/*
+    A Card object will be converted to a card code.
+    For example:
+        Card->Value = "Jack"
+        Card->Suit = "Diamonds"
+        The result would be the card code: "JD"
+*/
 std::string Trick::FromCardToCardCode(Card *card){
     std::string result = toCardValueCode(card->Value) + toCardSuiteCode(card->Suit);
     return result;
 }
 
+/*
+    Convert the suite code from a card code to a complete suit name
+    For example: C returns Clubs
+                 D returns Diamonds
+                 S returns Spades
+                 H returns hearts 
+*/
+std::string Trick::FromCardCodeSuitToCompleteSuit(std::string cardCodeSuiteLetter){
+    if (cardCodeSuiteLetter=="C" or cardCodeSuiteLetter=="c") return "Clubs";
+    if (cardCodeSuiteLetter=="H" or cardCodeSuiteLetter=="h") return "Hearts";
+    if (cardCodeSuiteLetter=="S" or cardCodeSuiteLetter=="s") return "Spades";
+    if (cardCodeSuiteLetter=="D" or cardCodeSuiteLetter=="s") return "Diamonds";
+
+    return "";
+}
+/*
+    Converts a card code, for example 10C to it's spoken format. 
+    In case of 10C that would be 10 of Clubs"
+*/
+std::string Trick::FromCardCodetoCard(std::string cardCode){
+        std::map<std::string, std::string> toCardCode = { 
+        {"A", "Ace"}, {"2", "Two"}, {"3", "Three"}, {"4,", "Four"},
+        {"5", "Five"}, {"6", "Six"}, {"7", "Seven"}, {"8", "Eight"},
+        {"9", "Nine"}, {"10", "Ten"}, {"J", "Jack"}, {"Q", "Queen"},
+        {"K", "King"}                
+    } ;
+
+    std::string result = "";
+
+    return  (cardCode.length() > 2) ? toCardCode[cardCode.substr(0, 2)] + " of " + FromCardCodeSuitToCompleteSuit( cardCode.substr(2,1) ) : toCardCode[cardCode.substr(0, 1)] + " of " +FromCardCodeSuitToCompleteSuit(cardCode.substr(1,1) );   
+}
+
+/*
+    The text spoken by the person will be a number between 1 and 52
+    The computer would then devine, which card is that number of positions down in the stack
+*/
 std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card *card){
     std::stringstream ss;  
     unsigned int num;
@@ -224,7 +281,7 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
 
     *state = Trick::States::GET_COLOR_AND_SUIT;
     
-    return std::string( (index > 51) ? SiStebbingsStack[index-51-1] : SiStebbingsStack[index] );
+    return std::string( (index > 51) ? FromCardCodetoCard(SiStebbingsStack[index-51-1]) : FromCardCodetoCard(SiStebbingsStack[index] ));
 }
 
 /*This step will verbally encode the color and the suit

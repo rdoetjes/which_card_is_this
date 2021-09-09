@@ -51,7 +51,7 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
         card->Color="Red";
         card->Suit="Diamond";
         *state=nextState;        
-        return "My spider sense tells me it is a "+card->Color+" card, is that correct?";
+        return "My spider sense tells me that it is a "+card->Color+" card, is that correct?";
     }
 
     return "";

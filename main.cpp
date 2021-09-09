@@ -33,8 +33,8 @@ int main(){
         if (currentState==Trick::States::GET_COLOR_AND_SUIT) resetCard(&card);
                 
         std::string say = Trick::divination(result->Text, &currentState, &card);
-        speak->SpeakTextAsync(say).get();
         std::cout << say << std::endl;
+        speak->SpeakTextAsync(say).get();        
         result = recognizer->RecognizeOnceAsync().get();
     }
     return 0;

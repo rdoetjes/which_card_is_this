@@ -2,7 +2,7 @@
 #include <speechapi_cxx.h>
 #include <fstream>
 #include "trick.h"
-#include "cyclicstacks.h"
+#include "cycliccardstacks.h"
 
 using namespace std;
 using namespace Microsoft::CognitiveServices::Speech;

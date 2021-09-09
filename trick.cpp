@@ -58,6 +58,17 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
 }
 
 /*
+    Set the card blanc, this is when we are in the 
+    GET_COLOR_AND_SUIT State
+*/
+void Trick::resetCard(Card *card){
+    card->Color="";
+    card->Suit="";
+    card->Value="";
+}
+
+
+/*
     The computer will say: 
                             -"It is a <color> card"
     The person will answer: 
@@ -301,8 +312,11 @@ std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card
                             -that is correct 4 item
 */
 std::string Trick::divination(std::string text, Trick::States *state, Card *card){    
-    if (*state==Trick::States::GET_COLOR_AND_SUIT) return Trick::GetColor(text, state, card);
-    
+    if (*state==Trick::States::GET_COLOR_AND_SUIT) {
+        Trick::resetCard(card);
+        return Trick::GetColor(text, state, card);
+    }
+
     if (*state==Trick::States::GET_VALUE_RANGE) return Trick::GetValueRange(text, state, card);
 
     if (*state==Trick::States::GET_VALUE) return Trick::GetValue(text, state, card);

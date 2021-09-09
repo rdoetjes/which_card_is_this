@@ -2,6 +2,12 @@
 #include <iostream>
 #include <regex>
 #include <stdlib.h>
+#include <sstream>
+#include <iostream>
+#include <map>
+#include <string>
+#include <cctype>
+
 
 /*
 Person wil ask the computer a question, revealing the suit and implicetely the colour
@@ -24,28 +30,28 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
         card->Color="Black";
         card->Suit="Club";
         *state=nextState;
-        return "My neurons tell me it is a "+card->Color+" card";
+        return "My neurons tell me it is a "+card->Color+" card, is that correct?";
     }
 
     if (std::regex_search(text, spades)) {
         card->Color="Black";
         card->Suit="Spade";
         *state=nextState;
-        return "Something tells me it is a "+card->Color+" card";
+        return "Something tells me it is a "+card->Color+" card, is that correct?";
     }
 
     if (std::regex_search(text, hearts)) {
         card->Color="Red";
         card->Suit="Heart";
         *state=nextState;        
-        return "The tickle in my testicles reveal to me that it is a "+card->Color+" card";
+        return "My testicles reveal to me that it is a "+card->Color+" card, is that correct?";
     }
 
     if (std::regex_search(text, diamonds)) {
         card->Color="Red";
         card->Suit="Diamond";
         *state=nextState;        
-        return "My spider sense tells me it is a "+card->Color+" card";
+        return "My spider sense tells me it is a "+card->Color+" card, is that correct?";
     }
 
     return "";
@@ -62,7 +68,7 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
 */
 std::string Trick::GetValueRange(std::string text, Trick::States *state, Card *card){
     std::regex one_to_four("yes*", std::regex_constants::ECMAScript | std::regex_constants::icase);
-    std::regex five_to_eight("yes it is*", std::regex_constants::ECMAScript | std::regex_constants::icase);
+    std::regex five_to_eight("[yes|sure]?[,]?it is*", std::regex_constants::ECMAScript | std::regex_constants::icase);
     std::regex nine_to_queen("correct*", std::regex_constants::ECMAScript | std::regex_constants::icase);
     std::regex king("[that is|you are] correct*", std::regex_constants::ECMAScript | std::regex_constants::icase);
 
@@ -95,12 +101,12 @@ std::string Trick::GetValueRange(std::string text, Trick::States *state, Card *c
         return reply;
     }
 
-    return "I have no fuckin idea!";
+    return "I have no fuckin idea! Do I look like a mindreader to you?";
 }
 
 std::string Trick::GetValue(std::string text, Trick::States *state, Card *card){
-    std::cout << "Reveal the card\'n";
-
+    static int iterations = 0;
+    iterations++;
     //The CardRangeBlockNr and the Index
     std::string CardValues[4][4] = {
         {"Ace", "Two", "Three", "Four"},
@@ -110,32 +116,34 @@ std::string Trick::GetValue(std::string text, Trick::States *state, Card *card){
     };
 
     std::regex one_to_four("yes*", std::regex_constants::ECMAScript | std::regex_constants::icase); //first item in the nested array
-    std::regex five_to_eight("yes it is*", std::regex_constants::ECMAScript | std::regex_constants::icase); //second item in the nested array
+    std::regex five_to_eight("[yes|sure]?[,]?it is*", std::regex_constants::ECMAScript | std::regex_constants::icase); //second item in the nested array
     std::regex nine_to_queen("correct*", std::regex_constants::ECMAScript | std::regex_constants::icase); //third item in the second array
     std::regex king("[that is|you are] correct*", std::regex_constants::ECMAScript | std::regex_constants::icase); //fourth eitem in the second array
 
-    Trick::States nextState = Trick::States::GET_COLOR_AND_SUIT;
+    Trick::States nextState = (iterations % 2 == 0) ? Trick::States::SI_STEBBINS_QUESTION : Trick::States::GET_COLOR_AND_SUIT;
     
     //Order is important to avoid partial matches of the text ("yes it is" needs to be evaluated before "yes")
     if (std::regex_search(text,five_to_eight)){
         *state = nextState;
+        card->Value = CardValues[card->FourCardBlockNr][1];
         return "Your card is the "+CardValues[card->FourCardBlockNr][1]+" of "+card->Suit+"s";
     }
 
     if (std::regex_search(text,king)) {
         *state = nextState;
+        card->Value = CardValues[card->FourCardBlockNr][3];
         return "Your card can only be the "+CardValues[card->FourCardBlockNr][3]+" of "+card->Suit+"s";
     }
 
     if (std::regex_search(text,one_to_four)) {
-                std::cout << "okay";
-
+        card->Value = CardValues[card->FourCardBlockNr][0];
         *state = nextState;
         return "Your card must be the "+CardValues[card->FourCardBlockNr][0]+" of "+card->Suit+"s";
     }
 
     if (std::regex_search(text,nine_to_queen)) {
         *state = nextState;
+        card->Value = CardValues[card->FourCardBlockNr][2];
         return "The card your are holding is the "+CardValues[card->FourCardBlockNr][2]+" of "+card->Suit+"s";
     }
 
@@ -143,6 +151,74 @@ std::string Trick::GetValue(std::string text, Trick::States *state, Card *card){
     return "I'll be fucked if I knew!";
 }
 
+/*
+    Now the computer will ask for a random number between 1 and 52
+*/
+std::string Trick::Ask4RandomNumber(Trick::States *state){
+    *state = Trick::SI_STEBBINS_REVEAL;
+    return "Please put the card back on top. And then give me a number between 1 and 52.";
+}
+
+std::string Trick::toCardValueCode(std::string cardValue){
+    std::map<std::string, std::string> toCardCode = { 
+        {"Ace", "A"}, {"Two", "2"}, {"Three", "3"}, {"Four", "4"}, 
+        {"Five", "5"}, {"Six", "6"}, {"Seven", "7"}, {"Eight", "8"}, 
+        {"Nine", "9"}, {"Ten", "10"}, {"Jack", "J"}, {"Queen", "Q"},
+        {"King", "K"}
+    } ;
+
+    return toCardCode[cardValue];
+}
+
+std::string Trick::toCardSuiteCode(std::string cardSuite){
+    std::string result = "";
+    result = toupper(cardSuite[0]);
+    return result;
+}
+
+std::string Trick::FromCardToCardCode(Card *card){
+    std::string result = toCardValueCode(card->Value) + toCardSuiteCode(card->Suit);
+    return result;
+}
+
+std::string Trick::SiStebbinsReveal(std::string text, Trick::States *state, Card *card){
+    std::stringstream ss;  
+    unsigned int num;
+    unsigned int cardLocationInStack;
+
+    std::cout << card->Suit << " " << card->Value << "\n";
+
+    if (text == "") return "I asked for a number between 1 and 52!";
+
+    ss << text;  
+    ss >> num;  
+
+    if (num < 1 and num > 52) return "You need to listen, I asked for a number between 1 and 52!";
+
+    std::string SiStebbingsStack[52] {
+        "AC", "4H", "7S", "10D", "KC", "3H", "6S", "9D", "QC", "2H",
+        "5C", "8D", "JC", "AH", "4S", "7D", "10C", "KH", "3C", "6D",
+        "9C", "QH", "2S", "5D", "8C", "JH", "AS", "4D", "7C", "10H",
+        "KS", "3D", "6C", "9H", "QS", "2D", "5C", "8H", "JS", "AD",
+        "4C", "7H", "10S", "KD", "3C", "6H", "9S", "QD", "2C", "5H",
+        "8S", "JD"
+    };
+
+    //find what the current offset is in the stack
+    std::string cardCode = FromCardToCardCode(card);
+    for (int i=0; i<52; i++){
+        if (SiStebbingsStack[i] == cardCode){
+            cardLocationInStack = i;
+            break;
+        }
+    }
+
+    int index = cardLocationInStack + num -1;
+
+    *state = Trick::States::GET_COLOR_AND_SUIT;
+    
+    return std::string( (index > 51) ? SiStebbingsStack[index-51-1] : SiStebbingsStack[index] );
+}
 
 /*This step will verbally encode the color and the suit
     The person says: Tell me = hearts, Tell us = diamands, Now Tell me = clubs, Now Tell us = diamonds
@@ -169,6 +245,10 @@ std::string Trick::divination(std::string text, Trick::States *state, Card *card
     if (*state==Trick::States::GET_VALUE_RANGE) return Trick::GetValueRange(text, state, card);
 
     if (*state==Trick::States::GET_VALUE) return Trick::GetValue(text, state, card);
+
+    if (*state==Trick::States::SI_STEBBINS_QUESTION) return Trick::Ask4RandomNumber(state);
+
+    if (*state==Trick::States::SI_STEBBINS_REVEAL) return Trick::SiStebbinsReveal(text, state, card);
 
     return "";
 }

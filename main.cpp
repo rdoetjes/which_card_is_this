@@ -28,13 +28,13 @@ int main(){
     
     resetCard(&card);
 
+    auto result = recognizer->RecognizeOnceAsync().get();
     while(1){
         if (currentState==Trick::States::GET_COLOR_AND_SUIT) resetCard(&card);
-
-        auto result = recognizer->RecognizeOnceAsync().get();
-
+                
         std::string say = Trick::divination(result->Text, &currentState, &card);
         speak->SpeakTextAsync(say).get();
+        result = recognizer->RecognizeOnceAsync().get();
     }
     return 0;
 }

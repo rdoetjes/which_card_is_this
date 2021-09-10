@@ -228,10 +228,10 @@ std::string Trick::FromCardToCardCode(Card *card){
                  H returns hearts 
 */
 std::string Trick::FromCardCodeSuitToCompleteSuit(std::string cardCodeSuiteLetter){
-    if (cardCodeSuiteLetter=="C" or cardCodeSuiteLetter=="c") return "Clubs";
-    if (cardCodeSuiteLetter=="H" or cardCodeSuiteLetter=="h") return "Hearts";
-    if (cardCodeSuiteLetter=="S" or cardCodeSuiteLetter=="s") return "Spades";
-    if (cardCodeSuiteLetter=="D" or cardCodeSuiteLetter=="s") return "Diamonds";
+    if (cardCodeSuiteLetter=="C" || cardCodeSuiteLetter=="c") return "Clubs";
+    if (cardCodeSuiteLetter=="H" || cardCodeSuiteLetter=="h") return "Hearts";
+    if (cardCodeSuiteLetter=="S" || cardCodeSuiteLetter=="s") return "Spades";
+    if (cardCodeSuiteLetter=="D" || cardCodeSuiteLetter=="s") return "Diamonds";
 
     return "";
 }

@@ -13,7 +13,7 @@ static Card card;
 int main(){
     promise<void> recognitionEnd;
 
-    auto config = SpeechConfig::FromSubscription("f3f37dca61334fe9b5207079b71e5d95", "westeurope");
+    auto config = SpeechConfig::FromSubscription("", "westeurope");
     config->SetSpeechSynthesisVoiceName("en-GB-RyanNeural");
     
     //open the speech synthezier

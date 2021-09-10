@@ -64,8 +64,8 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
 void Trick::resetCard(Card *card){
     card->Color="Black";
     card->Suit="Spade";
-    card->Value="Nine";
-    card->FourCardBlockNr=2;
+    card->Value="King";
+    card->FourCardBlockNr=3;
 }
 
 /*
@@ -184,15 +184,15 @@ std::string Trick::Ask4RandomNumber(Trick::States *state){
     Returns the card value code based on the card value
     for example Ace returns A (AC is for example ace of club in card code format)
 */
-std::string Trick::toCardValueCode(std::string cardValue){
-    std::map<std::string, std::string> toCardCode = { 
+std::string Trick::CardValueToCardCode(std::string cardValue){
+    std::map<std::string, std::string> cardValueToCardCode = { 
         {"Ace", "A"}, {"Two", "2"}, {"Three", "3"}, {"Four", "4"}, 
         {"Five", "5"}, {"Six", "6"}, {"Seven", "7"}, {"Eight", "8"}, 
         {"Nine", "9"}, {"Ten", "10"}, {"Jack", "J"}, {"Queen", "Q"},
         {"King", "K"}
     } ;
 
-    return toCardCode[cardValue];
+    return cardValueToCardCode[cardValue];
 }
 
 /*
@@ -202,7 +202,7 @@ std::string Trick::toCardValueCode(std::string cardValue){
         Diamonds returns "D"
     The algorithm, just takes the first letter of the suit and captitalizes it
 */
-std::string Trick::toCardSuiteCode(std::string cardSuite){
+std::string Trick::CardSuitToCardSuitCode(std::string cardSuite){
     std::string result = "";
     result = toupper(cardSuite[0]);
     return result;
@@ -216,7 +216,7 @@ std::string Trick::toCardSuiteCode(std::string cardSuite){
         The result would be the card code: "JD"
 */
 std::string Trick::FromCardToCardCode(Card *card){
-    std::string result = toCardValueCode(card->Value) + toCardSuiteCode(card->Suit);
+    std::string result = CardValueToCardCode(card->Value) + CardSuitToCardSuitCode(card->Suit);
     return result;
 }
 
@@ -235,19 +235,30 @@ std::string Trick::FromCardCodeSuitToCompleteSuit(std::string cardCodeSuiteLette
 
     return "";
 }
+
 /*
-    Converts a card code, for example 10C to it's spoken format. 
-    In case of 10C that would be: "10 of Clubs"
+    Convert from a Card Code valye to a Card value
+    for example:
+        A becomes Aces
+        10 becomes Ten
 */
-std::string Trick::FromCardCodetoCard(std::string cardCode){
-        std::map<std::string, std::string> toCardCode = { 
-        {"A", "Ace"}, {"2", "Two"}, {"3", "Three"}, {"4,", "Four"},
+std::string Trick::FromCardCodeValueToCardValue(std::string cardCodeValue){
+     std::map<std::string, std::string> fromCardCodeValueToCardValue = { 
+        {"A", "Ace"}, {"2", "Two"}, {"3", "Three"}, {"4", "Four"},
         {"5", "Five"}, {"6", "Six"}, {"7", "Seven"}, {"8", "Eight"},
         {"9", "Nine"}, {"10", "Ten"}, {"J", "Jack"}, {"Q", "Queen"},
         {"K", "King"}                
     } ;
 
-    return (cardCode.length() > 2) ? toCardCode[cardCode.substr(0, 2)] + " of " + FromCardCodeSuitToCompleteSuit( cardCode.substr(2,1) ) : toCardCode[cardCode.substr(0, 1)] + " of " + FromCardCodeSuitToCompleteSuit(cardCode.substr(1,1) );   
+    return fromCardCodeValueToCardValue[cardCodeValue];
+}
+
+/*
+    Converts a card code, for example 10C to it's spoken format. 
+    In case of 10C that would be: "10 of Clubs"
+*/
+std::string Trick::FromCardCodetoCard(std::string cardCode){
+    return (cardCode.length() > 2) ? FromCardCodeValueToCardValue(cardCode.substr(0, 2)) + " of " + FromCardCodeSuitToCompleteSuit( cardCode.substr(2,1) ) : FromCardCodeValueToCardValue(cardCode.substr(0, 1)) + " of " + FromCardCodeSuitToCompleteSuit(cardCode.substr(1,1) );   
 }
 
 /*
@@ -284,7 +295,7 @@ std::string Trick::RevealCardAtPosition(std::string text, Trick::States *state, 
     *state = Trick::States::GET_COLOR_AND_SUIT;
     
     std::string ins = "Count down "+std::to_string(num)+" cards and you find the ";
-    return std::string( (index > 51) ? ins+FromCardCodetoCard(cyclicCardStack[index-51-1]) : ins+FromCardCodetoCard(cyclicCardStack[index] ));
+    return std::string( (index > 51) ? ins+FromCardCodetoCard(cyclicCardStack[index-52]) : ins+FromCardCodetoCard(cyclicCardStack[index] ));
 }
 
 /*This step will verbally encode the color and the suit
@@ -316,7 +327,7 @@ std::string Trick::divination(std::string text, Trick::States *state, Card *card
 
     if (*state==Trick::States::CYCLIC_STACK_QUESTION) return Trick::Ask4RandomNumber(state);
 
-    if (*state==Trick::States::CYCLIC_STACK_REVEAL) return Trick::RevealCardAtPosition(text, state, card, cyclicCardStack);
+    if (*state==Trick::States::CYCLIC_STACK_REVEAL) return Trick::RevealCardAtPosition(text, state, card, cyclicCardStack);        
 
     return "";
 }

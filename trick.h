@@ -15,10 +15,11 @@ class Trick{
         static std::string Ask4RandomNumber(Trick::States *state);
         static std::string RevealCardAtPosition(std::string text, Trick::States *state, Card *card, const std::string cyclicCardStack[52]);
         static std::string FromCardToCardCode(Card *card);
-        static std::string toCardValueCode(std::string cardValue);
-        static std::string toCardSuiteCode(std::string cardSuite);
+        static std::string CardValueToCardCode(std::string cardValue);
+        static std::string CardSuitToCardSuitCode(std::string cardSuit);
         static std::string FromCardCodetoCard(std::string cardCode);
         static std::string FromCardCodeSuitToCompleteSuit(std::string cardCodeSuiteLetter);
+        static std::string FromCardCodeValueToCardValue(std::string cardCodeValue);
         static void resetCard(Card *card);
 };
 #endif

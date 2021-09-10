@@ -7,7 +7,7 @@
 using namespace std;
 using namespace Microsoft::CognitiveServices::Speech;
 
-static Trick::States currentState = Trick::States::GET_COLOR_AND_SUIT;
+static Trick::States currentState = Trick::States::CYCLIC_STACK_QUESTION;
 static Card card;
 
 int main(){

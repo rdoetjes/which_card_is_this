@@ -62,10 +62,10 @@ std::string Trick::GetColor(std::string text, Trick::States *state, Card *card){
     GET_COLOR_AND_SUIT State
 */
 void Trick::resetCard(Card *card){
-    card->Color="Black";
-    card->Suit="Spade";
-    card->Value="King";
-    card->FourCardBlockNr=3;
+    card->Color="";
+    card->Suit="";
+    card->Value="";
+    card->FourCardBlockNr=0;
 }
 
 /*

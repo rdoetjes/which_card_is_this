@@ -7,13 +7,13 @@
 using namespace std;
 using namespace Microsoft::CognitiveServices::Speech;
 
-static Trick::States currentState = Trick::States::CYCLIC_STACK_QUESTION;
+static Trick::States currentState = Trick::States::GET_COLOR_AND_SUIT;
 static Card card;
 
 int main(){
     promise<void> recognitionEnd;
 
-    auto config = SpeechConfig::FromSubscription("f3f37dca61334fe9b5207079b71e5d95", "westeurope");
+    auto config = SpeechConfig::FromSubscription("<add subscription here>", "westeurope");
     config->SetSpeechSynthesisVoiceName("en-GB-RyanNeural");
     
     //open the speech synthezier
